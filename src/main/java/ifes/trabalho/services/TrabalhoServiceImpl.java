@@ -1,9 +1,13 @@
 package ifes.trabalho.services;
 
-import java.util.Collection;
-import java.util.HashMap;
+import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.swing.JOptionPane;
+
+import com.google.protobuf.ProtocolStringList;
 
 import ifes.trabalho.proto.*;
 import ifes.trabalho.proto.TrabalhoGrpc.TrabalhoImplBase;
@@ -27,7 +31,7 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
                             .setConteudo("Bem-vindo, " + nome + "!")
                             .build();
 
-                    responseObserver.onNext(mensagem);
+                    enviarMensagem(mensagem, null);
                 }
             }
 
@@ -39,15 +43,31 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
         };
     }
     
-    
-    @Override public void enviarMensagem(Mensagem request,
+    @Override
+    public void enviarMensagem(Mensagem request,
         io.grpc.stub.StreamObserver<ifes.trabalho.proto.Empty> responseObserver) {
             for(StreamObserver<Mensagem> observer: users.values()) {
                 Mensagem mensagem = Mensagem.newBuilder()
                     .setRementente(request.getRementente())
                     .setConteudo(request.getConteudo())
+                    .setQntUsers(users.size())
+                    .addAllConectados(users.keySet())
                     .build();
+            
                observer.onNext(mensagem);
             }
+    }
+
+    @Override
+    public void enviarGrupo(Grupo request,
+        io.grpc.stub.StreamObserver<ifes.trabalho.proto.Empty> responseObserver) {
+       new Thread(() -> {
+            for(String grupo: request.getMembroList()) {
+                JOptionPane.showMessageDialog(null, String.format("BEM-VINDO(A) %s, OBRIGADO POR ME CRIAR! <3", grupo));
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+       }).start();
     }
 }

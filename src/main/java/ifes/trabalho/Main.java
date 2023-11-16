@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import com.google.api.client.util.Objects;
+
 import ifes.trabalho.controllers.ChatController;
 import ifes.trabalho.services.TrabalhoServiceImpl;
 import io.grpc.Server;
@@ -20,12 +22,21 @@ public class Main extends Application {
     private final Integer SERVER_PORT = 8080;
 
     public void start(Stage primaryStage) throws Exception {
-        startServer();   // So um deve executar esse metodo para conversar
+        //startServer();   // Esse metodo so execute ele uma vez.
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("./views/chat/tela.fxml"));
         Parent root = loader.load();
         ChatController controller = loader.getController();
-        String yourName = JOptionPane.showInputDialog(null, "Insira o seu nome: ");
+ 
+        String yourName = null;
+
+        while (java.util.Objects.isNull(yourName) || yourName.isEmpty()) {
+            try {
+                yourName = JOptionPane.showInputDialog(null, "Insira o seu nome: ");
+            } catch (Exception e) {}
+        }
+
         controller.setYourName(yourName);
+ 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -65,51 +76,6 @@ public class Main extends Application {
     public static void main(String ...args) {
         launch(args);
     }
-
-
-    // public static void main(String[] args)  {
-        // new Thread(() -> {
-        //     Server server = ServerBuilder.forPort(8080)
-        //     .addService(new TrabalhoServiceImpl())
-        //     .build();
-        
-        //     try {
-        //         server.start();
-        //          server.awaitTermination();
-        //     } catch (IOException | InterruptedException e) {
-        //         e.printStackTrace();
-        //     }
-           
-    //     }).start();
-
-    //     new Thread(() -> {
-   
-    //         Main.client();
-            
-    //     }).start();
-
-
-    // }
-
-    // public static void client() {
-    //     ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8080)
-    //         .usePlaintext()
-    //         .build();
-
-    //     TrabalhoBlockingStub stub = TrabalhoGrpc.newBlockingStub(channel);
-
-    //     Scanner sc = new Scanner(System.in);
-
-    //     while(true) {
-    //         System.out.println("Digite uma mensagem: ");
-    //         String escrito = sc.nextLine();
-
-    //         Mensagem mensagem = Mensagem.newBuilder().setConteudo(escrito).build();
-
-    //         stub.enviarMensagem(mensagem);
-    //     }
-    // }
-
 }
 
    

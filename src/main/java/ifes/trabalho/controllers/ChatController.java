@@ -1,6 +1,8 @@
 package ifes.trabalho.controllers;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,7 @@ public class ChatController {
 
     private final String HOST = "localhost";
     private final Integer PORT = 8080;
+    private final String[] MEMBERS = { "Gabriel Cardoso", "Lívia", "Marcelo"};
 
     @FXML
     private Label quantidadeConexao;
@@ -62,6 +65,9 @@ public class ChatController {
         public void onNext(Mensagem value) {
             javafx.application.Platform.runLater(() -> {
                 adicionarComentarioNaTela(value.getConteudo(), value.getRementente());
+                quantidadeConexao.setText(String.valueOf(value.getQntUsers()));
+                areaConectados.getChildren().clear();
+                value.getConectadosList().forEach(conectado -> adicionarUsuarioConectado(conectado));
             });
         }
 
@@ -94,6 +100,20 @@ public class ChatController {
             controller.setMensagem(comentario);
             controller.setNome(remetente);
             areaComentario.getChildren().add(conteudo);
+        } catch (Exception erro) {
+            erro.printStackTrace();
+        }
+    }
+
+    // Boilerplate t.t
+    // confundindo mt java com C#
+    public void adicionarUsuarioConectado(String nome) {
+         try {
+            FXMLLoader carregar = new FXMLLoader(getClass().getResource("../views/chat/conectado.fxml"));
+            Parent conteudo = carregar.load();
+            ConnectedController controller = carregar.getController();
+            controller.setNome(nome);
+            areaConectados.getChildren().add(conteudo);
         } catch (Exception erro) {
             erro.printStackTrace();
         }
@@ -148,6 +168,9 @@ public class ChatController {
         yourName = name;
         Usuario usuario = Usuario.newBuilder().setNome(name).build();
         usuarioStream.onNext(usuario);
+        ifes.trabalho.proto.Grupo grupo = ifes.trabalho.proto.Grupo.newBuilder()
+            .addAllMembro(Arrays.asList(MEMBERS)).build();
+        stub.enviarGrupo(grupo, null);
     }
 
 }

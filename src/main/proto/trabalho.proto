@@ -22,6 +22,7 @@ message Mensagem {
     string rementente = 1;
     string conteudo = 2;
     int32 qntUsers = 3;
+    repeated string conectados = 4;
 }
 
 message Empty {}
