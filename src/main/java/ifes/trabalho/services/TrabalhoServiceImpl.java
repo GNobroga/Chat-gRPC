@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JOptionPane;
 
-import com.google.protobuf.ProtocolStringList;
 
 import ifes.trabalho.proto.*;
 import ifes.trabalho.proto.TrabalhoGrpc.TrabalhoImplBase;
@@ -46,9 +45,16 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
     @Override
     public void enviarMensagem(Mensagem request,
         io.grpc.stub.StreamObserver<ifes.trabalho.proto.Empty> responseObserver) {
+            String saiu = null;
+
+            if (request.getSair()) {
+                users.remove(request.getRementente());
+                saiu = String.format("%s Saiu", request.getRementente());
+            }
+
             for(StreamObserver<Mensagem> observer: users.values()) {
                 Mensagem mensagem = Mensagem.newBuilder()
-                    .setRementente(request.getRementente())
+                    .setRementente(saiu != null ? saiu : request.getRementente())
                     .setConteudo(request.getConteudo())
                     .setQntUsers(users.size())
                     .addAllConectados(users.keySet())
@@ -62,12 +68,17 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
     public void enviarGrupo(Grupo request,
         io.grpc.stub.StreamObserver<ifes.trabalho.proto.Empty> responseObserver) {
        new Thread(() -> {
+            String saudacoes = "Saudações para: ";
             for(String grupo: request.getMembroList()) {
-                JOptionPane.showMessageDialog(null, String.format("BEM-VINDO(A) %s, OBRIGADO POR ME CRIAR! <3", grupo));
+                 saudacoes += " " + grupo + " ,";
             }
-            try {
+            saudacoes = saudacoes.substring(0, saudacoes.length() - 1);
+            Mensagem mensagem = Mensagem.newBuilder().setConteudo(saudacoes).setRementente("MASTER").build();
+             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {}
+            enviarMensagem(mensagem, null);
+           
        }).start();
     }
 }

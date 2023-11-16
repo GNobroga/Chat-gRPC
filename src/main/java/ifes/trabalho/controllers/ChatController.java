@@ -133,16 +133,20 @@ public class ChatController {
     @FXML
     void botaoEnviar(MouseEvent event) {
         if (!getComentario().isEmpty()) {
-              Mensagem mensagem = Mensagem.newBuilder().setRementente(yourName).setConteudo(getComentario()).build();
-                new Thread(() -> {
-                    stub.enviarMensagem(mensagem, null);
-                }).start();
+            Mensagem mensagem = Mensagem.newBuilder().setRementente(yourName).setConteudo(getComentario()).build();
+            new Thread(() -> {
+                stub.enviarMensagem(mensagem, null);
+            }).start();
             setComentario("");
         }
     }
 
     @FXML
     void fechar(MouseEvent event) {
+        Mensagem mensagem = Mensagem.newBuilder().setRementente(yourName).setSair(true).build();
+         new Thread(() -> {
+                stub.enviarMensagem(mensagem, null);
+        }).start();
         if (Objects.nonNull(chatScreen)) chatScreen.close();
     }
 
