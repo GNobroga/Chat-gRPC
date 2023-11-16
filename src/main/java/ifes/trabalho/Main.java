@@ -20,7 +20,7 @@ public class Main extends Application {
     private final Integer SERVER_PORT = 8080;
 
     public void start(Stage primaryStage) throws Exception {
-        //startServer();   // So um deve executar esse metodo para conversar
+        startServer();   // So um deve executar esse metodo para conversar
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("./views/chat/tela.fxml"));
         Parent root = loader.load();
         ChatController controller = loader.getController();

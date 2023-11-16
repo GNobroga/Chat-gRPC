@@ -7,10 +7,11 @@ option java_outer_classname = "TrabalhoProto";
 service Trabalho {
    rpc Conectar(stream Usuario) returns (stream Mensagem);
    rpc EnviarMensagem(Mensagem) returns (Empty);
+   rpc EnviarGrupo(Grupo) returns (Empty);
 }
 
 message Usuario {
-   string nome = 2;
+   string nome = 1;
 }
 
 message Grupo {
@@ -19,7 +20,8 @@ message Grupo {
 
 message Mensagem {
     string rementente = 1;
-    string conteudo = 3;
+    string conteudo = 2;
+    int32 qntUsers = 3;
 }
 
 message Empty {}
