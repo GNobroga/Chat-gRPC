@@ -1,12 +1,7 @@
 package ifes.trabalho.services;
 
-import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.swing.JOptionPane;
-
 
 import ifes.trabalho.proto.*;
 import ifes.trabalho.proto.TrabalhoGrpc.TrabalhoImplBase;
@@ -16,6 +11,8 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
 
     private Map<String, StreamObserver<Mensagem>> users = new ConcurrentHashMap<>();
 
+    private static int CURRENT_ID = 1;
+
     @Override
     public StreamObserver<Usuario> conectar(StreamObserver<Mensagem> responseObserver) {
         return new StreamObserver<Usuario>() {
@@ -23,15 +20,20 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
             public void onNext(Usuario request) {
                 String nome = request.getNome();
 
-                if (!users.containsKey(nome)) {
-                    users.put(nome, responseObserver);
-
-                    Mensagem mensagem = Mensagem.newBuilder()
-                            .setConteudo("Bem-vindo, " + nome + "!")
-                            .build();
-
-                    enviarMensagem(mensagem, null);
+                if (users.containsKey(nome)) {
+                    nome += "-" + CURRENT_ID++;
                 }
+
+                users.put(nome, responseObserver);
+
+                Mensagem mensagem = Mensagem.newBuilder()
+                        .setConteudo("Bem-vindo, " + nome + " ao Chat GRPC")
+                        .build();
+
+                responseObserver.onNext(Mensagem.newBuilder().setNovoNome(nome).build());
+
+                enviarMensagem(mensagem, null);
+
             }
 
             @Override
@@ -73,6 +75,7 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
                  saudacoes += " " + grupo + " ,";
             }
             saudacoes = saudacoes.substring(0, saudacoes.length() - 1);
+            saudacoes += " :)";
             Mensagem mensagem = Mensagem.newBuilder().setConteudo(saudacoes).setRementente("MASTER").build();
              try {
                 Thread.sleep(1000);

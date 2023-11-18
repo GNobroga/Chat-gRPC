@@ -64,10 +64,14 @@ public class ChatController {
         @Override
         public void onNext(Mensagem value) {
             javafx.application.Platform.runLater(() -> {
-                adicionarComentarioNaTela(value.getConteudo(), value.getRementente());
-                quantidadeConexao.setText(String.valueOf(value.getQntUsers()));
-                areaConectados.getChildren().clear();
-                value.getConectadosList().forEach(conectado -> adicionarUsuarioConectado(conectado));
+                if (value.getNovoNome() != null && !value.getNovoNome().isEmpty()) {
+                    yourName = value.getNovoNome();
+                } else {
+                       adicionarComentarioNaTela(value.getConteudo(), value.getRementente());
+                    quantidadeConexao.setText(String.valueOf(value.getQntUsers()));
+                    areaConectados.getChildren().clear();
+                    value.getConectadosList().forEach(conectado -> adicionarUsuarioConectado(conectado));
+                }
             });
         }
 
@@ -169,7 +173,6 @@ public class ChatController {
     }
 
     public void setYourName(String name) {
-        yourName = name;
         Usuario usuario = Usuario.newBuilder().setNome(name).build();
         usuarioStream.onNext(usuario);
         ifes.trabalho.proto.Grupo grupo = ifes.trabalho.proto.Grupo.newBuilder()

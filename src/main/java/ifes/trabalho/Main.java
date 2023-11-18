@@ -22,19 +22,22 @@ public class Main extends Application {
     private final Integer SERVER_PORT = 8080;
 
     public void start(Stage primaryStage) throws Exception {
+        String yourName = null;
+
+        try {
+            yourName = JOptionPane.showInputDialog(null, "Insira o seu nome: ");
+        } catch (Exception e) {
+            return;
+        }
+    
+        if (java.util.Objects.isNull(yourName) || yourName.trim().isEmpty()) return;
+
+
         startServer();   // Esse metodo so execute ele uma vez.
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("./views/chat/tela.fxml"));
         Parent root = loader.load();
         ChatController controller = loader.getController();
  
-        String yourName = null;
-
-        while (java.util.Objects.isNull(yourName) || yourName.isEmpty()) {
-            try {
-                yourName = JOptionPane.showInputDialog(null, "Insira o seu nome: ");
-            } catch (Exception e) {}
-        }
-
         controller.setYourName(yourName);
  
         Scene scene = new Scene(root);
