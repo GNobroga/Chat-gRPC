@@ -49,7 +49,7 @@ public class TrabalhoServiceImpl extends TrabalhoImplBase {
 
             if (request.getSair()) {
                 users.remove(request.getRementente());
-                saiu = String.format("%s Saiu", request.getRementente());
+                saiu = String.format("%s foi desconectado.", request.getRementente());
             }
 
             for(StreamObserver<Mensagem> observer: users.values()) {
